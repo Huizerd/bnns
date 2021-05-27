@@ -1,0 +1,12 @@
+data:
+  dir: data  # data directory
+  thresh: 0.5  # threshold for making data binary
+
+loader:
+  batch: 32  # batch size
+  num_workers: 4  # number of processes for loading data
+  gpu: 0  # GPU idx if there is one
+
+visualize:
+  enabled: True  # show visualization
+  verbose: True  # show progress
