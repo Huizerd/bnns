@@ -1,5 +1,5 @@
 # BNNs
-Implementation of binary neural networks with PyTorch (and VHDL).
+Implementation of binary neural networks with PyTorch.
 
 ## Installation
 
