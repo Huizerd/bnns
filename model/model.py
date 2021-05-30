@@ -1,7 +1,8 @@
 import pytorch_lightning as pl
 import torch
+import torchmetrics
 
-from model.submodules import BinarizedLinear, binarize
+from model.submodules import BinarizedLinear, binarize_cancel, binarize_htanh
 
 
 class BNN(pl.LightningModule):
@@ -10,19 +11,31 @@ class BNN(pl.LightningModule):
     ("Binarized Neural Networks").
     """
 
-    def __init__(self, optimizer, lr, batch_size):
+    def __init__(self, hidden_sizes, optimizer, lr, batch_size, binarize_fn):
         super().__init__()
+
+        # save passed hyperparams
+        self.save_hyperparameters()
 
         # simple architecture
         # no batchnorm, so I think we need biases instead
-        self.fc1 = BinarizedLinear(784, 512)
-        self.fc2 = BinarizedLinear(512, 512)
-        self.fc3 = BinarizedLinear(512, 10)
 
-        # classification loss and optimizer
+        # input + hidden
+        self.hiddens = torch.nn.ModuleList()
+        self.hiddens.append(BinarizedLinear(784, hidden_sizes[0], binarize_fn=binarize_fn))
+        for in_size, out_size in zip(hidden_sizes[:1], hidden_sizes[1:]):
+            self.hiddens.append(BinarizedLinear(in_size, out_size, binarize_fn=binarize_fn))
+        # output
+        self.out = BinarizedLinear(hidden_sizes[-1], 10, binarize_fn=binarize_fn)
+
+        # classification loss/metric and optimizer
         # cross-entryopy = log_softmax + negative log-likelihood
         self.loss_fn = torch.nn.CrossEntropyLoss()
+        self.accuracy = torchmetrics.Accuracy()
         self.optim = optimizer
+
+        # binarization fn
+        self.binarize = eval(binarize_fn)
 
         # these can be set by auto_scale_batch and auto_lr_find
         self.lr = lr
@@ -32,10 +45,15 @@ class BNN(pl.LightningModule):
         # input x
         # - is assumed binary
         # - has shape (batch, 1, 28, 28)
-        x = x.view(self.batch_size, 784)
-        x = binarize(self.fc1(x))
-        x = binarize(self.fc2(x))
-        x = self.fc3(x)  # we don't binarize the final activation
+        # - if we don't have drop_last == True for dataloader, batch can differ
+        batch, _, _, _ = x.shape
+        x = x.view(batch, 784)
+
+        # go through hidden layers
+        for hidden in self.hiddens:
+            x = self.binarize(hidden(x))
+        x = self.out(x)  # we don't binarize the final activation
+
         return x
 
     def training_step(self, batch, batch_idx):
@@ -51,9 +69,16 @@ class BNN(pl.LightningModule):
         data, labels = batch
         # call forward
         logits = self(data)
-        # get loss and log
+
+        # get loss and accuracy
         loss = self.loss_fn(logits, labels)
+        # needs softmax until https://github.com/PyTorchLightning/metrics/issues/60 is fixed
+        accuracy = self.accuracy(torch.nn.functional.softmax(logits, 1), labels)
+
+        # log
         self.log(f"{prefix} loss", loss)
+        self.log(f"{prefix} accuracy", accuracy)
+
         return loss
 
     def configure_optimizers(self):
@@ -64,7 +89,18 @@ class BNN(pl.LightningModule):
     def optimizer_step(self, *args, **kwargs):
         # do the original optimizer step first
         super().optimizer_step(*args, **kwargs)
+
         # clamp parameters, don't record grads
         with torch.no_grad():
             for param in self.parameters():
                 param.clamp_(-1, 1)
+
+    # called after each epoch
+    def training_epoch_end(self, *args, **kwargs):
+        # go over all parameters
+        for name, param in self.named_parameters():
+            # log parameter histogram
+            self.logger.experiment.add_histogram(name, param, self.current_epoch)
+
+        # do the original training_epoch_end
+        return super().training_epoch_end(*args, **kwargs)

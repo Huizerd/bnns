@@ -2,4 +2,4 @@ venv/
 data/datasets/
 __pycache__/
 .vscode/
-checkpoints/
+logs/

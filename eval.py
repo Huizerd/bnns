@@ -1,4 +1,5 @@
 import argparse
+from logging import log
 
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger
@@ -8,43 +9,41 @@ from data.datamodule import BinaryMNISTDataModule
 from model.model import BNN
 
 
-def train(config):
+def evaluate(config, checkpoint):
     # seed
     pl.seed_everything(0)
 
     # datamodule = dataset + dataloader
-    # - split into train and validation
-    # - shuffle data order each epoch
+    # - also contains test data
     # - pin_memory improves performance
     dm = BinaryMNISTDataModule(
         config["datamodule"]["dir"],
-        val_split=0.2,
         num_workers=config["datamodule"]["num_workers"],
         batch_size=config["datamodule"]["batch"],
-        shuffle=True,
         pin_memory=True,
     )
 
     # model
-    model = BNN(**config["model"], batch_size=config["datamodule"]["batch"])
+    model = BNN.load_from_checkpoint(checkpoint_path=checkpoint)
 
-    # logging with TensorBoard
-    logger = TensorBoardLogger(config["logging"]["dir"], name=config["logging"]["name"])
+    # log test to correct TensorBoard run
+    save_dir, name, version = checkpoint.split("/")[:3]
+    logger = TensorBoardLogger(save_dir, name=name, version=version)
 
-    # train!
+    # evaluate!
     trainer = pl.Trainer(**config["trainer"], logger=logger)
-    trainer.tune(model, datamodule=dm)
-    trainer.fit(model, datamodule=dm)
+    trainer.test(model, datamodule=dm)
 
-    # save model? -> happens automatically, in checkpoints folder
+    # TODO: some visualization?
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="conf/train.yaml")
+    parser.add_argument("--config", type=str, default="conf/eval.yaml")
+    parser.add_argument("--checkpoint", type=str, required=True)
     args = parser.parse_args()
 
     with open(args.config, "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    train(config)
+    evaluate(config, args.checkpoint)

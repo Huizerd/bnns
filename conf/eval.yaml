@@ -1,0 +1,7 @@
+datamodule:
+  dir: data/datasets  # data directory
+  batch: 128  # batch size
+  num_workers: 4  # number of processes for loading data
+
+trainer:
+  gpus: -1  # number of GPUs, -1 == all

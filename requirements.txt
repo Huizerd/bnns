@@ -3,5 +3,7 @@ pre-commit
 pytorch-lightning
 pytorch-lightning-bolts
 pyyaml
+tensorboard
 torch
+torchmetrics
 torchvision

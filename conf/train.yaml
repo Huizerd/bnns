@@ -1,12 +1,19 @@
 datamodule:
   dir: data/datasets  # data directory
-  batch: 32  # batch size
+  batch: 128  # batch size
   num_workers: 4  # number of processes for loading data
 
 trainer:
   gpus: -1  # number of GPUs, -1 == all
   max_epochs: 100  # training epochs
+  track_grad_norm: 2  # set to -1 to not track grad norm
 
 model:
+  binarize_fn: binarize_cancel
+  hidden_sizes: [512, 512]
   optimizer: torch.optim.Adam
   lr: 0.001
+
+logging:
+  dir: logs
+  name: base
