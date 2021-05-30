@@ -1,5 +1,5 @@
 # BNNs
-Implementation of binary neural networks with PyTorch.
+Implementation of binary neural networks with PyTorch. Largely following the paper ["Binarized Neural Networks"](https://papers.neurips.cc/paper/2016/hash/d8330f857a17c53d217014ee776bfd50-Abstract.html) by Hubara et al., 2016.
 
 ## Installation
 
