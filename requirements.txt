@@ -1,5 +1,7 @@
 matplotlib
 pre-commit
+pytorch-lightning
+pytorch-lightning-bolts
 pyyaml
 torch
 torchvision

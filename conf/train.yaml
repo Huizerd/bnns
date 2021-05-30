@@ -1,0 +1,12 @@
+datamodule:
+  dir: data/datasets  # data directory
+  batch: 32  # batch size
+  num_workers: 4  # number of processes for loading data
+
+trainer:
+  gpus: -1  # number of GPUs, -1 == all
+  max_epochs: 100  # training epochs
+
+model:
+  optimizer: torch.optim.Adam
+  lr: 0.001

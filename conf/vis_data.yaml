@@ -1,0 +1,8 @@
+datamodule:
+  dir: data/datasets  # data directory
+  batch: 32  # batch size
+  num_workers: 4  # number of processes for loading data
+
+misc:
+  thresh: 0.5  # threshold for binarization
+  gpu: 0  # GPU idx if there is one
