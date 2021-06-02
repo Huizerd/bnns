@@ -11,40 +11,65 @@ port(
 end top_level;
     
 architecture behavioral of top_level is
-component control
+component dataflow
 port(
-    clk         : in std_logic;
-    rst         : in std_logic;
-    c_signal    : out std_logic
+    clk             : in std_logic;
+    rst             : in std_logic;
+    in_layer        : in std_logic_vector(783 downto 0);
+    prev_pct_0      : out std_logic_vector(783 downto 0);
+    prev_pct_1      : out std_logic_vector(511 downto 0);
+    prev_pct_2      : out std_logic_vector(511 downto 0);
+    weight_0        : out std_logic_vector(783 downto 0);
+    weight_1        : out std_logic_vector(511 downto 0);
+    weight_2        : out std_logic_vector(511 downto 0);
+    enabel          : out std_logic_vector(2 downto 0);
+    calced_pct      : in std_logic_vector(2 downto 0)
     );
 end component;
 
-component mlp_pipeline
+component bmac
+generic(
+    length : integer
+    );
 port(
     clk         : in std_logic;
     rst         : in std_logic;
-    c_signal    : in std_logic;
-    in_layer    : in std_logic_vector(783 downto 0);
-    out_layer   : out std_logic_vector(9 downto 0)
+    enable      : in std_logic;
+    prev_pct    : in std_logic_vector(length-1 downto 0);
+    weight      : in std_logic_vector(length-1 downto 0);
+    calced_pct  : out std_logic
     );
 end component;    
     
-signal c_signal : std_logic;
-    
 begin
 
-l_c: control port map(
-    clk => clk,
-    rst => rst,
-    c_signal => c_signal
+l_dataflow: dataflow 
+port map(
+
     );
     
-l_p: mlp_pipeline port map(
-    clk => clk,
-    rst => rst,
-    c_signal => c_signal,
-    in_layer => in_layer,
-    out_layer => out_layer
+l_bmac_0: bmac 
+generic map(
+    length => 784
+    )
+port map(
+
+    ); 
+    
+l_bmac_1: bmac 
+generic map(
+    length => 512
+    )
+port map(
+
+    ); 
+    
+l_bmac_2: bmac 
+generic map(
+    length => 512
+    )
+port map(
+
     ); 
     
 end behavioral;
