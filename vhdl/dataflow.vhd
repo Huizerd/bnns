@@ -30,7 +30,7 @@ begin
 		if rising_edge(CLK) then
 
 			-- check if BMAC is not yet done
-			if (cyclesBMAC < cyclesperBMAC) then
+			if (cyclesBMAC < cyclesperBMAC - 1) then
 				cyclesBMAC := cyclesBMAC + 1;
 
 			else
