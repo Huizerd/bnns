@@ -24,23 +24,26 @@ architecture dataflowArch of dataflow is
 begin
 
 	process(CLK)
-		variable i : integer range 0 to 512
-		variable cyclesBMAC : integer range 0 to cyclesPerBMAC
+	
+		variable i : integer range 0 to 512;
+		variable cyclesBMAC : integer range 0 to cyclesPerBMAC;
 
-		if rising_edge(CLK) then
+    begin
+
+		if rising_edge(clk) then
 
 			-- check if BMAC is not yet done
 			if (cyclesBMAC < cyclesperBMAC - 1) then
 				cyclesBMAC := cyclesBMAC + 1;
 
 			else
-				--TODO: write calced_pct to register x3
+				--TODO: enable write of calced_pct to register x3?
 				cyclesBMAC := 0;
-				counter := counter + 1;
+				i := i + 1;
 			end if;
 
 			-- all layers active
-			if (i < 10)
+			if (i < 10) then
 				enable(0) <= '1';
 				enable(1) <= '1';
 				enable(2) <= '1';
@@ -57,7 +60,7 @@ begin
 				enable(0) <= '0';
 				enable(1) <= '0';
 				enable(2) <= '0';
-				counter := 0;
+				i := 0;
 				--TODO: move calced_pct activations to next stage
 
 			end if;
