@@ -5,7 +5,7 @@ use ieee.std_logic_textio.all;
 
 entity dataflow is
 generic (
-		cycles_per_BMAC : integer
+		cycles_per_BMAC : integer := 3
 		);
 port(
 		clk             : in std_logic;
@@ -28,16 +28,15 @@ architecture dataflow_architecture of dataflow is
     type weights_memory_1 is array (0 to 511) of std_logic_vector(511 downto 0);
     type weights_memory_2 is array (0 to 9) of std_logic_vector(511 downto 0);
     
-    alias bread is read[line, std_logic_vector];
-    
     impure function init_weights_mem_0 return weights_memory_0 is
         file text_file : text open read_mode is "TODO.txt";
         variable text_line : line;
         variable weights : weights_memory_0;
+        variable good : boolean;
     begin
         for i in 0 to 511 loop
             readline(text_file, text_line);
-            bread(text_line, weights(i));
+            read(text_line, weights(i), good);
         end loop;
         
         return weights;
@@ -47,10 +46,11 @@ architecture dataflow_architecture of dataflow is
         file text_file : text open read_mode is "TODO.txt";
         variable text_line : line;
         variable weights : weights_memory_1;
+        variable good : boolean;
     begin
         for i in 0 to 511 loop
             readline(text_file, text_line);
-            bread(text_line, weights(i));
+            read(text_line, weights(i), good);
         end loop;
         
         return weights;
@@ -60,10 +60,11 @@ architecture dataflow_architecture of dataflow is
         file text_file : text open read_mode is "TODO.txt";
         variable text_line : line;
         variable weights : weights_memory_2;
+        variable good : boolean;
     begin
         for i in 0 to 9 loop
             readline(text_file, text_line);
-            bread(text_line, weights(i));
+            read(text_line, weights(i), good);
         end loop;
         
         return weights;
