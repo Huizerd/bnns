@@ -1,9 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use std.textio.all;
 
 entity dataflow is
 generic (
-		cyclesPerBMAC : integer
+		cycles_per_BMAC : integer
 		);
 port(
 		clk             : in std_logic;
@@ -20,25 +21,49 @@ port(
 		);
 end dataflow;
 
-architecture dataflowArch of dataflow is
+architecture dataflow_architecture of dataflow is
+    
+    type weights_memory_0 is array (0 to 511) of std_logic_vector(783 downto 0);
+    type weights_memory_1 is array (0 to 511) of std_logic_vector(511 downto 0);
+    type weights_memory_2 is array (0 to 9) of std_logic_vector(511 downto 0);
+    
+    --alias bread is read[line, std_ulogic_vector];
+    
+    impure function init_weights_mem_0 return weights_memory_0 is
+        file text_file : text open read_mode is "TODO.txt";
+        variable text_line : line;
+        variable weights : weights_memory_0;
+    begin
+        for i in 0 to 512 loop
+            readline(text_file, text_line);
+            bread(text_line, weights(i));
+        end loop;
+        
+        return weights;
+    end function;
+    
+    signal weights_mem_0 : weights_memory_0 := init_weights_mem_0;
+    signal weights_mem_1 : weights_memory_1;
+    signal weights_mem_2 : weights_memory_2;
+    
 begin
 
 	process(CLK)
 	
 		variable i : integer range 0 to 512;
-		variable cyclesBMAC : integer range 0 to cyclesPerBMAC;
+		variable cycles_BMAC : integer range 0 to cycles_per_BMAC;
 
     begin
 
 		if rising_edge(clk) then
 
 			-- check if BMAC is not yet done
-			if (cyclesBMAC < cyclesperBMAC - 1) then
-				cyclesBMAC := cyclesBMAC + 1;
+			if (cycles_BMAC < cycles_per_BMAC - 1) then
+				cycles_BMAC := cycles_BMAC + 1;
 
 			else
 				--TODO: enable write of calced_pct to register x3?
-				cyclesBMAC := 0;
+				cycles_BMAC := 0;
 				i := i + 1;
 			end if;
 
@@ -67,4 +92,4 @@ begin
 		end if;    
 	end process;
 
-end dataflowArch;
+end dataflow_architecture;
