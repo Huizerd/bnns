@@ -8,7 +8,7 @@ entity counter is
 port (
     A    : in std_logic_vector (15 downto 0);
     -- I think we discussed a 16 to 4-bit counter, but aren't 5 bits necessary to represent 16?
-    Cout : std_logic_vector (4 downto 0);
+    Cout : out std_logic_vector (4 downto 0)
 );
 end counter;
 
