@@ -3,8 +3,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity adder_32_to_7 is 
-generic ( 	n : integer := 4;	
-		n_out : integer := 7 ); 
+generic ( 	n : integer := 5;	
+		n_out : integer := 8 ); 
 port(
 A : in std_logic_vector((n-1) downto 0);
 B : in std_logic_vector((n-1) downto 0);
@@ -57,7 +57,7 @@ level1b:for i in 0 to (n-1)  generate
 
 -- Second level with 7 FA's
 
---First 4 FA's
+--First 5 FA's
 level2a:for i in 0 to (n-1)  generate
 		FA_L2: FA port map (G(i), H(i), Sout_L1a(i), Sout_L2a(i), Cout_L2a(i));
 	end generate level2a;
@@ -67,26 +67,28 @@ level2b:for i in 0 to (n-2)  generate
 		FA_L2: FA port map (Sout_L1b(i+1), Cout_L1a(i), Cout_L1b(i), Sout_L2b(i), Cout_L2b(i));
 	end generate level2b;
 
---Third level with 4 FA's and 2 HA's and LSB bit of output as result
+--Third level with 4 FA's and 2 FA's and LSB bit of output as result
 
 level3a:for i in 0 to (n-2) generate
 		FA_L3: FA port map (Sout_L2a(i+1), Cout_L2a(i), Sout_L2b(i), Sout_L3a(i), Cout_L3a(i));
 	end generate level3a;
 
+-- LSB HA
 HA_L3: HA port map (Sout_L2a(0), Sout_L1b(0), Add_out(0), Cout_L3b );
 
+-- MSB FA
 FA_L3: FA port map(Cout_L2a((n-1)), Cout_L1b((n-1)), Cout_L1a((n-1)), Sout_L3a((n-1)), Cout_L3c);
 
 
--- Fourth level with 3FA's and 1 HA and 2 LSB bits of output as result
+-- Fourth level with 3FA's and 1 FA and 2 LSB bits of output as result
 
-level4a:for i in 0 to 2 generate
+level4a:for i in 0 to (n-2) generate
 		FA_L4: FA port map (Sout_L3a(i+1), Cout_L3a(i), Cout_L2b(i), Sout_L4a(i), Cout_L4a(i));
 	end generate level4a;
 
 HA_L4: HA port map (Sout_L3a(0), Cout_L3b, Add_out(1), Cout_L4b);
 
--- Fifth level with Carry propagate adder, 1 HA and 3 FA's
+-- Fifth level with Carry propagate adder, 1 HA and 4 FA's
 
 HA_L5: HA port map (Sout_L4a(0), Cout_L4b, Add_out(2), Cout_L5);
 
@@ -94,7 +96,8 @@ FA_L5a: FA port map (Sout_L4a(1), Cout_L4a(0), Cout_L5, Add_out(3), Cout_L5a);
 
 FA_L5b: FA port map (Sout_L4a(2), Cout_L4a(1), Cout_L5a, Add_out(4), Cout_L5b);
 
-FA_L5c: FA port map (Cout_L3c, Cout_L4a(2), Cout_L5b, Add_out(5), Add_out(6));
+FA_L5c: FA port map (Sout_L4a(3), Cout_L4a(2), Cout_L5b, Add_out(5), Cout_L5c);
 	
+FA_L5d: FA port map (Cout_L3c, Cout_L4a(3), Cout_L5c, Add_out(6), Add_out(7));
 
 end structural ; 
