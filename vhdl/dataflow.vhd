@@ -76,7 +76,7 @@ architecture dataflow_architecture of dataflow is
     
 begin
 
-	process(CLK)
+	process(clk)
 	
 		variable i : integer range 0 to 512;
 		variable cycles_BMAC : integer range 0 to cycles_per_BMAC;
