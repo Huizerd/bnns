@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use std.textio.all;
+use ieee.std_logic_textio.all;
 
 entity dataflow is
 generic (
@@ -27,14 +28,40 @@ architecture dataflow_architecture of dataflow is
     type weights_memory_1 is array (0 to 511) of std_logic_vector(511 downto 0);
     type weights_memory_2 is array (0 to 9) of std_logic_vector(511 downto 0);
     
-    --alias bread is read[line, std_ulogic_vector];
+    alias bread is read[line, std_logic_vector];
     
     impure function init_weights_mem_0 return weights_memory_0 is
         file text_file : text open read_mode is "TODO.txt";
         variable text_line : line;
         variable weights : weights_memory_0;
     begin
-        for i in 0 to 512 loop
+        for i in 0 to 511 loop
+            readline(text_file, text_line);
+            bread(text_line, weights(i));
+        end loop;
+        
+        return weights;
+    end function;
+    
+    impure function init_weights_mem_1 return weights_memory_1 is
+        file text_file : text open read_mode is "TODO.txt";
+        variable text_line : line;
+        variable weights : weights_memory_1;
+    begin
+        for i in 0 to 511 loop
+            readline(text_file, text_line);
+            bread(text_line, weights(i));
+        end loop;
+        
+        return weights;
+    end function;
+    
+    impure function init_weights_mem_2 return weights_memory_2 is
+        file text_file : text open read_mode is "TODO.txt";
+        variable text_line : line;
+        variable weights : weights_memory_2;
+    begin
+        for i in 0 to 9 loop
             readline(text_file, text_line);
             bread(text_line, weights(i));
         end loop;
@@ -43,8 +70,8 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     signal weights_mem_0 : weights_memory_0 := init_weights_mem_0;
-    signal weights_mem_1 : weights_memory_1;
-    signal weights_mem_2 : weights_memory_2;
+    signal weights_mem_1 : weights_memory_1 := init_weights_mem_1;
+    signal weights_mem_2 : weights_memory_2 := init_weights_mem_2;
     
 begin
 
