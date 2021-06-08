@@ -6,9 +6,6 @@ entity adder_32_to_7 is
 generic ( 	n : integer := 4;	
 		n_out : integer := 7 ); 
 port(
-clk : in std_logic;
-rst : in std_logic;
-enable: in std_logic;
 A : in std_logic_vector((n-1) downto 0);
 B : in std_logic_vector((n-1) downto 0);
 C : in std_logic_vector((n-1) downto 0);
@@ -39,8 +36,6 @@ S : out std_logic;
 Cout : out std_logic);
 end component;
 
-signal A_sig, B_sig , C_sig, D_sig  : std_logic_vector((n-1) downto 0);
-signal E_sig, F_sig , G_sig, H_sig  : std_logic_vector((n-1) downto 0);
 signal Sout_L1a, Cout_L1a, Sout_L1b, Cout_L1b  : std_logic_vector((n-1) downto 0);
 signal Sout_L2a, Cout_L2a, Sout_L3a : std_logic_vector((n-1) downto 0);
 signal Sout_L4a, Cout_L4a : std_logic_vector((n-1) downto 0);
@@ -50,43 +45,21 @@ signal Cout_L5, Cout_L5a, Cout_L5b, Cout_L5c  : std_logic;
 
 begin
 
-process(clk, A, B, C, D, E, F, G, H)
-begin
-	if (rising_edge(clk) and enable = '1') then
-		A_sig <= A;
-		B_sig <= B;
-		C_sig <= C;
-		D_sig <= D;
-		E_sig <= E;
-		F_sig <= F;
-		G_sig <= G;
-		H_sig <= H;
-	elsif rst = '1' then
-		A_sig <= "0000";
-		B_sig <= "0000";
-		C_sig <= "0000";
-		D_sig <= "0000";
-		E_sig <= "0000";
-		F_sig <= "0000";
-		G_sig <= "0000";
-		H_sig <= "0000";
-	end if;
-end process;
 
 -- First 8 FA's for the first level of the wallace adder
 level1a:for i in 0 to (n-1) generate
-		FA_L1: FA port map (A_sig(i), B_sig(i), C_sig(i), Sout_L1a(i), Cout_L1a(i));
+		FA_L1: FA port map (A(i), B(i), C(i), Sout_L1a(i), Cout_L1a(i));
 	end generate level1a;
 
 level1b:for i in 0 to (n-1)  generate
-		FA_L1: FA port map (D_sig(i), E_sig(i), F_sig(i), Sout_L1b(i), Cout_L1b(i));
+		FA_L1: FA port map (D(i), E(i), F(i), Sout_L1b(i), Cout_L1b(i));
 	end generate level1b;
 
 -- Second level with 7 FA's
 
 --First 4 FA's
 level2a:for i in 0 to (n-1)  generate
-		FA_L2: FA port map (G_sig(i), H_sig(i), Sout_L1a(i), Sout_L2a(i), Cout_L2a(i));
+		FA_L2: FA port map (G(i), H(i), Sout_L1a(i), Sout_L2a(i), Cout_L2a(i));
 	end generate level2a;
 
 -- Second 3 FA's
