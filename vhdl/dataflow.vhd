@@ -33,7 +33,7 @@ architecture dataflow_architecture of dataflow is
     type weights_memory_2 is array (0 to output_layer_size - 1) of std_logic_vector(hidden_layer_size - 1 downto 0);
     
     impure function init_weights_mem_0 return weights_memory_0 is
-        file text_file : text open read_mode is "TODO.txt";
+        file text_file : text open read_mode is "test.txt";
         variable text_line : line;
         variable weights : weights_memory_0;
         variable good : boolean;
@@ -47,7 +47,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_weights_mem_1 return weights_memory_1 is
-        file text_file : text open read_mode is "TODO.txt";
+        file text_file : text open read_mode is "test.txt";
         variable text_line : line;
         variable weights : weights_memory_1;
         variable good : boolean;
@@ -61,7 +61,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_weights_mem_2 return weights_memory_2 is
-        file text_file : text open read_mode is "TODO.txt";
+        file text_file : text open read_mode is "test.txt";
         variable text_line : line;
         variable weights : weights_memory_2;
         variable good : boolean;
@@ -89,7 +89,7 @@ architecture dataflow_architecture of dataflow is
     
 begin
 
-	process(CLK)
+	process(clk)
 	
 		variable i : integer range 0 to hidden_layer_size := hidden_layer_size;
 		variable cycles_BMAC : integer range 0 to cycles_per_BMAC := 0;
@@ -103,55 +103,67 @@ begin
 
 		if rising_edge(clk) then
 		
-		      
+		    if rst = '1' then
+                enable(0) <= '0';
+                enable(1) <= '0';
+                enable(2) <= '0';
+                layer0_pct <= in_layer;
+		        i := 0;
+		        cycles_BMAC := 0;
+		    
+		    
+		    else
 
-			-- check if BMAC is not yet done
-			if (cycles_BMAC < cycles_per_BMAC - 1) then
-				cycles_BMAC := cycles_BMAC + 1;
-
-			else
-				--TODO: enable write of calced_pct to register x3?
-				cycles_BMAC := 0;
-				i := i + 1;
-				layer1_pct_buff(i) <= calced_pct(0);
-				layer2_pct_buff(i) <= calced_pct(1);
-				layer3_pct_buff(i) <= calced_pct(2);
-				
-			end if;
-			    
+                -- check if BMAC is not yet done
+                if (cycles_BMAC < cycles_per_BMAC - 1) then
+                    cycles_BMAC := cycles_BMAC + 1;
+    
+                else
+                    --TODO: enable write of calced_pct to register x3?
+                    cycles_BMAC := 0;
+                    
+                    -- all layers active
+                    if (i < output_layer_size) then
+                        enable(0) <= '1';
+                        enable(1) <= '1';
+                        enable(2) <= '1';
+                        weight_0 <= weights_mem_0(i);
+                        weight_1 <= weights_mem_1(i);
+                        weight_2 <= weights_mem_2(i);
+                        
+                        layer1_pct_buff(i) <= calced_pct(0);
+                        layer2_pct_buff(i) <= calced_pct(1);
+                        layer3_pct_buff(i) <= calced_pct(2);
+                        i := i + 1;
         
-			-- all layers active
-			if (i < output_layer_size) then
-				enable(0) <= '1';
-				enable(1) <= '1';
-				enable(2) <= '1';
-				--TODO: select input weights x3
-				weight_0 <= weights_mem_0(i);
-				weight_1 <= weights_mem_1(i);
-				weight_2 <= weights_mem_2(i);
-
-			-- input and hidden layers active
-			elsif (i < hidden_layer_size) then
-				enable(0) <= '1';
-				enable(1) <= '1';
-				enable(2) <= '0';
-				--TODO: select input weights x2
-				weight_0 <= weights_mem_0(i);
-				weight_1 <= weights_mem_1(i);
-
-			else 	
-				enable(0) <= '0';
-				enable(1) <= '0';
-				enable(2) <= '0';
-				i := 0;
-				--TODO: move calced_pct activations to next stage
-				layer0_pct <= in_layer;
-				layer1_pct <= layer1_pct_buff;
-				layer2_pct <= layer2_pct_buff;
-				layer3_pct <= layer3_pct_buff;
-				
-			end if;
-		end if;    
+                    -- input and hidden layers active
+                    elsif (i < hidden_layer_size) then
+                        enable(0) <= '1';
+                        enable(1) <= '1';
+                        enable(2) <= '0';
+                        weight_0 <= weights_mem_0(i);
+                        weight_1 <= weights_mem_1(i);
+                        
+                        layer1_pct_buff(i) <= calced_pct(0);
+                        layer2_pct_buff(i) <= calced_pct(1);
+                        layer3_pct_buff(i) <= calced_pct(2);
+                        i := i + 1;
+        
+                    else 	
+                        enable(0) <= '0';
+                        enable(1) <= '0';
+                        enable(2) <= '0';
+                        
+                        layer0_pct <= in_layer;
+                        layer1_pct <= layer1_pct_buff;
+                        layer2_pct <= layer2_pct_buff;
+                        layer3_pct <= layer3_pct_buff;
+                        i := 0;
+                        
+                    end if;     
+                end if;
+            end if;    
+         end if;
 	end process;
 
 end dataflow_architecture;
