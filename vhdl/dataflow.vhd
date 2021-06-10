@@ -76,8 +76,8 @@ architecture dataflow_architecture of dataflow is
     
     
     signal weights_mem_0 : weights_memory_0 := init_weights_mem_0;
-    signal weights_mem_1 : weights_memory_1;
-    signal weights_mem_2 : weights_memory_2;
+    signal weights_mem_1 : weights_memory_1 := init_weights_mem_1;
+    signal weights_mem_2 : weights_memory_2 := init_weights_mem_2;
     
     signal layer0_pct       : std_logic_vector(input_size - 1 downto 0);
     signal layer1_pct_buff  : std_logic_vector(hidden_layer_size - 1 downto 0);
