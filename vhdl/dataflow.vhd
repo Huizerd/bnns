@@ -5,31 +5,32 @@ use ieee.std_logic_textio.all;
 
 entity dataflow is
 generic (
-		cycles_per_BMAC : integer := 3
+		cycles_per_BMAC : integer := 3;
+		input_size : integer := 784;
+		hidden_layer_size : integer := 512;
+		output_layer_size : integer := 10
 		);
 port(
 		clk             : in std_logic;
 		rst             : in std_logic;
-		in_layer        : in std_logic_vector(783 downto 0);
-		prev_pct_0      : out std_logic_vector(783 downto 0);
-		prev_pct_1      : out std_logic_vector(511 downto 0);
-		prev_pct_2      : out std_logic_vector(511 downto 0);
-		weight_0        : out std_logic_vector(783 downto 0);
-		weight_1        : out std_logic_vector(511 downto 0);
-		weight_2        : out std_logic_vector(511 downto 0);
+		in_layer        : in std_logic_vector(input_size - 1 downto 0);
+		prev_pct_0      : out std_logic_vector(input_size - 1 downto 0);
+		prev_pct_1      : out std_logic_vector(hidden_layer_size - 1 downto 0);
+		prev_pct_2      : out std_logic_vector(hidden_layer_size - 1 downto 0);
+		weight_0        : out std_logic_vector(input_size - 1 downto 0);
+		weight_1        : out std_logic_vector(hidden_layer_size - 1 downto 0);
+		weight_2        : out std_logic_vector(hidden_layer_size - 1 downto 0);
 		enable          : out std_logic_vector(2 downto 0);
 		calced_pct      : in std_logic_vector(2 downto 0);
-		out_layer       : out std_logic_vector(9 downto 0)
+		out_layer       : out std_logic_vector(output_layer_size - 1 downto 0)
 		);
 end dataflow;
 
 architecture dataflow_architecture of dataflow is
     
-    type weights_memory_0 is array (0 to 511) of std_logic_vector(783 downto 0);
-    type weights_memory_1 is array (0 to 511) of std_logic_vector(511 downto 0);
-    type weights_memory_2 is array (0 to 9) of std_logic_vector(511 downto 0);
-    
-    --alias bread is read[line, std_ulogic_vector];
+    type weights_memory_0 is array (0 to hidden_layer_size - 1) of std_logic_vector(input_size - 1 downto 0);
+    type weights_memory_1 is array (0 to hidden_layer_size - 1) of std_logic_vector(hidden_layer_size - 1 downto 0);
+    type weights_memory_2 is array (0 to output_layer_size - 1) of std_logic_vector(hidden_layer_size - 1 downto 0);
     
     impure function init_weights_mem_0 return weights_memory_0 is
         file text_file : text open read_mode is "TODO.txt";
@@ -37,7 +38,7 @@ architecture dataflow_architecture of dataflow is
         variable weights : weights_memory_0;
         variable good : boolean;
     begin
-        for i in 0 to 511 loop
+        for i in 0 to hidden_layer_size - 1 loop
             readline(text_file, text_line);
             read(text_line, weights(i), good);
         end loop;
@@ -51,7 +52,7 @@ architecture dataflow_architecture of dataflow is
         variable weights : weights_memory_1;
         variable good : boolean;
     begin
-        for i in 0 to 511 loop
+        for i in 0 to hidden_layer_size - 1 loop
             readline(text_file, text_line);
             read(text_line, weights(i), good);
         end loop;
@@ -65,7 +66,7 @@ architecture dataflow_architecture of dataflow is
         variable weights : weights_memory_2;
         variable good : boolean;
     begin
-        for i in 0 to 9 loop
+        for i in 0 to output_layer_size - 1 loop
             readline(text_file, text_line);
             read(text_line, weights(i), good);
         end loop;
@@ -78,19 +79,19 @@ architecture dataflow_architecture of dataflow is
     signal weights_mem_1 : weights_memory_1;
     signal weights_mem_2 : weights_memory_2;
     
-    signal layer0_pct       : std_logic_vector(783 downto 0);
-    signal layer1_pct_buff  : std_logic_vector(511 downto 0);
-    signal layer1_pct       : std_logic_vector(511 downto 0);
-    signal layer2_pct_buff  : std_logic_vector(511 downto 0);
-    signal layer2_pct       : std_logic_vector(511 downto 0);
-    signal layer3_pct_buff  : std_logic_vector(9 downto 0);
-    signal layer3_pct       : std_logic_vector(9 downto 0);
+    signal layer0_pct       : std_logic_vector(input_size - 1 downto 0);
+    signal layer1_pct_buff  : std_logic_vector(hidden_layer_size - 1 downto 0);
+    signal layer1_pct       : std_logic_vector(hidden_layer_size - 1 downto 0);
+    signal layer2_pct_buff  : std_logic_vector(hidden_layer_size - 1 downto 0);
+    signal layer2_pct       : std_logic_vector(hidden_layer_size - 1 downto 0);
+    signal layer3_pct_buff  : std_logic_vector(output_layer_size - 1 downto 0);
+    signal layer3_pct       : std_logic_vector(output_layer_size - 1 downto 0);
     
 begin
 
 	process(CLK)
 	
-		variable i : integer range 0 to 512 := 512;
+		variable i : integer range 0 to hidden_layer_size := hidden_layer_size;
 		variable cycles_BMAC : integer range 0 to cycles_per_BMAC := 0;
 
     begin
@@ -120,7 +121,7 @@ begin
 			    
         
 			-- all layers active
-			if (i < 10) then
+			if (i < output_layer_size) then
 				enable(0) <= '1';
 				enable(1) <= '1';
 				enable(2) <= '1';
@@ -130,7 +131,7 @@ begin
 				weight_2 <= weights_mem_2(i);
 
 			-- input and hidden layers active
-			elsif (i < 512) then
+			elsif (i < hidden_layer_size) then
 				enable(0) <= '1';
 				enable(1) <= '1';
 				enable(2) <= '0';
