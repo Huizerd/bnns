@@ -1,0 +1,7 @@
+batch_size: 128
+binarize_fn: binarize_cancel
+hidden_sizes:
+- 512
+- 512
+lr: 0.001
+optimizer: torch.optim.Adam

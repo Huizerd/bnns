@@ -1,5 +1,4 @@
 import argparse
-from logging import log
 
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger

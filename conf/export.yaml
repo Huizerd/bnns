@@ -1,0 +1,2 @@
+datamodule:
+  dir: data/datasets  # data directory
