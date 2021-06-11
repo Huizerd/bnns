@@ -20,6 +20,9 @@ port(
 		weight_0        : out std_logic_vector(input_size - 1 downto 0);
 		weight_1        : out std_logic_vector(hidden_layer_size - 1 downto 0);
 		weight_2        : out std_logic_vector(hidden_layer_size - 1 downto 0);
+		bias_0          : out std_logic;
+		bias_1          : out std_logic;
+		bias_2          : out std_logic;
 		enable          : out std_logic_vector(2 downto 0);
 		calced_pct      : in std_logic_vector(2 downto 0);
 		out_layer       : out std_logic_vector(output_layer_size - 1 downto 0)
@@ -74,10 +77,47 @@ architecture dataflow_architecture of dataflow is
         return weights;
     end function;
     
+    impure function init_bias_mem_0 return std_logic_vector is
+        file text_file : text open read_mode is "test.txt";
+        variable text_line : line;
+        variable biases : std_logic_vector(hidden_layer_size - 1 downto 0);
+        variable good : boolean;
+    begin
+        readline(text_file, text_line);
+        read(text_line, biases, good);
+        return biases;
+    end function;
+    
+    impure function init_bias_mem_1 return std_logic_vector is
+        file text_file : text open read_mode is "test.txt";
+        variable text_line : line;
+        variable biases : std_logic_vector(hidden_layer_size - 1 downto 0);
+        variable good : boolean;
+    begin
+        readline(text_file, text_line);
+        read(text_line, biases, good);
+        return biases;
+    end function;
+    
+    impure function init_bias_mem_2 return std_logic_vector is
+        file text_file : text open read_mode is "test.txt";
+        variable text_line : line;
+        variable biases : std_logic_vector(output_layer_size - 1 downto 0);
+        variable good : boolean;
+    begin
+        readline(text_file, text_line);
+        read(text_line, biases, good);
+        return biases;
+    end function;
+    
     
     signal weights_mem_0 : weights_memory_0 := init_weights_mem_0;
     signal weights_mem_1 : weights_memory_1 := init_weights_mem_1;
     signal weights_mem_2 : weights_memory_2 := init_weights_mem_2;
+    
+    signal bias_mem_0 : std_logic_vector(hidden_layer_size - 1 downto 0) := init_bias_mem_0;
+    signal bias_mem_1 : std_logic_vector(hidden_layer_size - 1 downto 0) := init_bias_mem_1;
+    signal bias_mem_2 : std_logic_vector(output_layer_size - 1 downto 0) := init_bias_mem_2;
     
     signal layer0_pct       : std_logic_vector(input_size - 1 downto 0);
     signal layer1_pct_buff  : std_logic_vector(hidden_layer_size - 1 downto 0);
