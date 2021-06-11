@@ -70,7 +70,7 @@ component counter is
 port (
     A    : in std_logic_vector (15 downto 0);
     -- I think we discussed a 16 to 4-bit counter, but aren't 5 bits necessary to represent 16?
-    Cout : std_logic_vector (4 downto 0));
+    Cout : out std_logic_vector (4 downto 0));
 end component;
 
 component threshold_bit is
@@ -84,17 +84,17 @@ type a1_array is array(0 to 3) of std_logic_vector(7 downto 0);
 signal xor_outputs : std_logic_vector(511 downto 0);
 signal counter_outputs : c_array;
 signal adder1_outputs : a1_array;
-signal popcount : std_logic_vector(11 downto 0);
+signal popcount : std_logic_vector(10 downto 0);
 begin
 
 --XOR all input weights and previous bitwise
-GENXOR: for I in 0 to 511 generate
-    xor_outputs(I) <= weights(I) xor previous(I);
+GENXNOR: for I in 0 to 511 generate
+    xor_outputs(I) <= weights(I) xnor previous(I);
     end generate;
     
 --  32 16 5 counters
-GENCOUNTER: for I in 0 to 32 generate
-    COUNTER_I: counter port map(xor_outputs(I*16-1 downto I*16), counter_outputs(I));
+GENCOUNTER: for I in 0 to 31 generate
+    COUNTER_I: counter port map(xor_outputs((I+1)*16-1 downto I*16), counter_outputs(I));
     end generate;
     
 -- 32 counter outputs van 5 bits worden verdeeld over 4 8(5bit) naar 8 bit adders
