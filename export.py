@@ -19,7 +19,7 @@ def export(config, checkpoint):
     # model
     model = BNN.load_from_checkpoint(checkpoint_path=checkpoint)
 
-    # log test to correct TensorBoard run
+    # export to correct dir
     save_dir = "/".join(checkpoint.split("/")[:3])
 
     # save parameters to txt files
