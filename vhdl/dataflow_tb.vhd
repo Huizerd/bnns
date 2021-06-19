@@ -80,7 +80,7 @@ generic map (
     cycles_per_BMAC => 3,
     input_size => 3,
     hidden_layer_size => 6,
-    output_layer_size => 6
+    output_layer_size => 4
 )
 port map (
     clk => clk,
@@ -107,17 +107,17 @@ end process;
     rst <= '1', '0' after clock_period;
     
     in_layer <= "000", 
-    "001" after 3*6*clock_period, 
-    "010" after 3*6*2*clock_period,
-    "011" after 3*6*3*clock_period,
-    "100" after 3*6*4*clock_period,
-    "101" after 3*6*5*clock_period;
+    "001" after 13*6*clock_period+clock_period/2, 
+    "010" after 3*6*2*clock_period+clock_period/2,
+    "011" after 3*6*3*clock_period+clock_period/2,
+    "100" after 3*6*4*clock_period+clock_period/2,
+    "101" after 3*6*5*clock_period+clock_period/2;
     
     calced_pct <= "000", 
-    "001" after 3*6*clock_period, 
-    "010" after 3*6*2*clock_period,
-    "011" after 3*6*3*clock_period,
-    "100" after 3*6*4*clock_period,
-    "101" after 3*6*5*clock_period;
+    "001" after 3*2*clock_period+clock_period/2, 
+    "010" after 3*3*clock_period+clock_period/2,
+    "011" after 3*4*clock_period+clock_period/2,
+    "100" after 3*5*clock_period+clock_period/2,
+    "101" after 3*6*clock_period+clock_period/2;
 
 end Behavioral;

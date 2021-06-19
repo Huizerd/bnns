@@ -131,7 +131,7 @@ begin
 
 	process(clk)
 	
-		variable i : integer range 0 to hidden_layer_size := hidden_layer_size;
+		variable i : integer range 0 to hidden_layer_size := hidden_layer_size+1;
 		variable cycles_BMAC : integer range 0 to cycles_per_BMAC := 0;
 
     begin
@@ -159,11 +159,22 @@ begin
                     cycles_BMAC := cycles_BMAC + 1;
     
                 else
-                    --TODO: enable write of calced_pct to register x3?
                     cycles_BMAC := 0;
+
+                    if (i = 0) then
+                        enable(0) <= '1';
+                        enable(1) <= '0';
+                        enable(2) <= '1';
+                        weight_0 <= weights_mem_0(i);
+                        weight_1 <= weights_mem_1(i);
+                        weight_2 <= weights_mem_2(i);
+                        
+                        --layer1_pct_buff(i) <= calced_pct(0);
+                        --layer2_pct_buff(i) <= calced_pct(1);
+                        --layer3_pct_buff(i) <= calced_pct(2);
+                        i := i + 1;
                     
-                    -- all layers active
-                    if (i < output_layer_size) then
+                    elsif (i < output_layer_size) then
                         enable(0) <= '1';
                         enable(1) <= '1';
                         enable(2) <= '1';
@@ -171,12 +182,23 @@ begin
                         weight_1 <= weights_mem_1(i);
                         weight_2 <= weights_mem_2(i);
                         
-                        layer1_pct_buff(i) <= calced_pct(0);
-                        layer2_pct_buff(i) <= calced_pct(1);
-                        layer3_pct_buff(i) <= calced_pct(2);
+                        layer1_pct_buff(i-1) <= calced_pct(0);
+                        layer2_pct_buff(i-1) <= calced_pct(1);
+                        layer3_pct_buff(i-1) <= calced_pct(2);
+                        i := i + 1;
+                        
+                    elsif (i = output_layer_size) then
+                        enable(0) <= '1';
+                        enable(1) <= '1';
+                        enable(2) <= '0';
+                        weight_0 <= weights_mem_0(i);
+                        weight_1 <= weights_mem_1(i);
+                        
+                        layer1_pct_buff(i-1) <= calced_pct(0);
+                        layer2_pct_buff(i-1) <= calced_pct(1);
+                        layer3_pct_buff(i-1) <= calced_pct(2);
                         i := i + 1;
         
-                    -- input and hidden layers active
                     elsif (i < hidden_layer_size) then
                         enable(0) <= '1';
                         enable(1) <= '1';
@@ -184,9 +206,21 @@ begin
                         weight_0 <= weights_mem_0(i);
                         weight_1 <= weights_mem_1(i);
                         
-                        layer1_pct_buff(i) <= calced_pct(0);
-                        layer2_pct_buff(i) <= calced_pct(1);
-                        layer3_pct_buff(i) <= calced_pct(2);
+                        layer1_pct_buff(i-1) <= calced_pct(0);
+                        layer2_pct_buff(i-1) <= calced_pct(1);
+                        --layer3_pct_buff(i) <= calced_pct(2);
+                        i := i + 1;
+
+                    elsif (i = hidden_layer_size) then
+                        enable(0) <= '0';
+                        enable(1) <= '0';
+                        enable(2) <= '0';
+                        --weight_0 <= weights_mem_0(i);
+                        --weight_1 <= weights_mem_1(i);
+                        
+                        layer1_pct_buff(i-1) <= calced_pct(0);
+                        layer2_pct_buff(i-1) <= calced_pct(1);
+                        --layer3_pct_buff(i) <= calced_pct(2);
                         i := i + 1;
         
                     else 	
