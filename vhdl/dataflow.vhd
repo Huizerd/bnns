@@ -39,7 +39,7 @@ architecture dataflow_architecture of dataflow is
     type weights_memory_2 is array (0 to output_layer_size - 1) of std_logic_vector(hidden_layer_size - 1 downto 0);
     
     impure function init_weights_mem_0 return weights_memory_0 is
-        file text_file : text open read_mode is "test.txt";
+        file text_file : text open read_mode is "../export/base_version_7/l0_weights.txt";
         variable text_line : line;
         variable weights : weights_memory_0;
         variable good : boolean;
@@ -53,7 +53,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_weights_mem_1 return weights_memory_1 is
-        file text_file : text open read_mode is "test.txt";
+        file text_file : text open read_mode is "../export/base_version_7/l1_weights.txt";
         variable text_line : line;
         variable weights : weights_memory_1;
         variable good : boolean;
@@ -67,7 +67,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_weights_mem_2 return weights_memory_2 is
-        file text_file : text open read_mode is "test.txt";
+        file text_file : text open read_mode is "../export/base_version_7/l2_weights.txt";
         variable text_line : line;
         variable weights : weights_memory_2;
         variable good : boolean;
@@ -81,7 +81,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_bias_mem_0 return std_logic_vector is
-        file text_file : text open read_mode is "test.txt";
+        file text_file : text open read_mode is "../export/base_version_7/l0_biases.txt";
         variable text_line : line;
         variable biases : std_logic_vector(hidden_layer_size - 1 downto 0);
         variable good : boolean;
@@ -92,7 +92,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_bias_mem_1 return std_logic_vector is
-        file text_file : text open read_mode is "test.txt";
+        file text_file : text open read_mode is "../export/base_version_7/l1_biases.txt";
         variable text_line : line;
         variable biases : std_logic_vector(hidden_layer_size - 1 downto 0);
         variable good : boolean;
@@ -103,7 +103,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_bias_mem_2 return std_logic_vector is
-        file text_file : text open read_mode is "test.txt";
+        file text_file : text open read_mode is "../export/base_version_7/l2_biases.txt";
         variable text_line : line;
         variable biases : std_logic_vector(output_layer_size - 1 downto 0);
         variable good : boolean;

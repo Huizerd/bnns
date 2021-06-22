@@ -1,13 +1,14 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.types_package.all;
 
 entity top_level is
 port(
     clk         : in std_logic;
     rst         : in std_logic;
     in_layer    : in std_logic_vector(783 downto 0);
-    out_layer   : out std_logic_vector(9 downto 0)
+    out_layer   : out out_type
     );
 end top_level;
     
@@ -36,7 +37,7 @@ port(
     calced_pct_0    : in std_logic;
     calced_pct_1    : in std_logic;
     calced_pct_2    : in std_logic_vector(9 downto 0);
-    out_layer       : out std_logic_vector(output_layer_size - 1 downto 0)
+    out_layer       : out out_type
     );
 end component;
 

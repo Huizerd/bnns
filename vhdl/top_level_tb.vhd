@@ -4,6 +4,7 @@ use std.textio.all;
 use ieee.std_logic_textio.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
+use work.types_package.all;
 
 entity top_level_tb is
 end top_level_tb;
@@ -15,12 +16,12 @@ port(
     clk         : in std_logic;
     rst         : in std_logic;
     in_layer    : in std_logic_vector(783 downto 0);
-    out_layer   : out std_logic_vector(9 downto 0)
+    out_layer   : out out_type
     );
 end component;
 
 impure function input_image return std_logic_vector is
-        file text_file : text open read_mode is "in_image.txt";
+        file text_file : text open read_mode is "../export/base_version_7/in_image.txt";
         variable text_line : line;
         variable input : std_logic_vector(783 downto 0);
         variable good : boolean;
@@ -32,7 +33,7 @@ end function;
 
 signal in_image : std_logic_vector(783 downto 0) := input_image;
 signal in_layer : std_logic_vector(783 downto 0);
-signal out_layer : std_logic_vector(9 downto 0);
+signal out_layer : out_type;
 signal clk, rst : std_logic;
 
 begin
@@ -54,5 +55,6 @@ rst <= 	'1' after 0 ns,
 	'0' after 50 ns;
 
 in_layer <= in_image;
+out_layer <= out_layer;
 
 end behavioral;
