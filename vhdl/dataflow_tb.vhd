@@ -53,6 +53,9 @@ port(
 		weight_0        : out std_logic_vector(input_size - 1 downto 0);
 		weight_1        : out std_logic_vector(hidden_layer_size - 1 downto 0);
 		weight_2        : out std_logic_vector(hidden_layer_size - 1 downto 0);
+        bias_0          : out std_logic;
+        bias_1          : out std_logic;
+        bias_2          : out std_logic;
 		enable          : out std_logic_vector(2 downto 0);
 		calced_pct      : in std_logic_vector(2 downto 0);
 		out_layer       : out std_logic_vector(output_layer_size - 1 downto 0)
@@ -68,6 +71,9 @@ signal prev_pct_2 : std_logic_vector(5 downto 0);
 signal weight_0 : std_logic_vector(2 downto 0);
 signal weight_1 : std_logic_vector(5 downto 0);
 signal weight_2 : std_logic_vector(5 downto 0);
+signal bias_0 : std_logic;
+signal bias_1 : std_logic;
+signal bias_2 : std_logic;
 signal enable : std_logic_vector(2 downto 0);
 signal calced_pct : std_logic_vector(2 downto 0);
 
@@ -92,6 +98,9 @@ port map (
     weight_0 => weight_0,
     weight_1 => weight_1,
     weight_2 => weight_2,
+    bias_0 => bias_0,
+    bias_1 => bias_1,
+    bias_2 => bias_2,
     enable => enable,
     calced_pct => calced_pct
 );

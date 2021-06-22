@@ -168,7 +168,10 @@ begin
                         weight_0 <= weights_mem_0(i);
                         weight_1 <= weights_mem_1(i);
                         weight_2 <= weights_mem_2(i);
-                        
+                        bias_0 <= bias_mem_0(i);
+                        bias_1 <= bias_mem_1(i);
+                        bias_2 <= bias_mem_2(i);
+
                         --layer1_pct_buff(i) <= calced_pct(0);
                         --layer2_pct_buff(i) <= calced_pct(1);
                         --layer3_pct_buff(i) <= calced_pct(2);
@@ -181,7 +184,10 @@ begin
                         weight_0 <= weights_mem_0(i);
                         weight_1 <= weights_mem_1(i);
                         weight_2 <= weights_mem_2(i);
-                        
+                        bias_0 <= bias_mem_0(i);
+                        bias_1 <= bias_mem_1(i);
+                        bias_2 <= bias_mem_2(i);
+
                         layer1_pct_buff(i-1) <= calced_pct(0);
                         layer2_pct_buff(i-1) <= calced_pct(1);
                         layer3_pct_buff(i-1) <= calced_pct(2);
@@ -193,6 +199,8 @@ begin
                         enable(2) <= '0';
                         weight_0 <= weights_mem_0(i);
                         weight_1 <= weights_mem_1(i);
+                        bias_0 <= bias_mem_0(i);
+                        bias_1 <= bias_mem_1(i);
                         
                         layer1_pct_buff(i-1) <= calced_pct(0);
                         layer2_pct_buff(i-1) <= calced_pct(1);
@@ -205,6 +213,8 @@ begin
                         enable(2) <= '0';
                         weight_0 <= weights_mem_0(i);
                         weight_1 <= weights_mem_1(i);
+                        bias_0 <= bias_mem_0(i);
+                        bias_1 <= bias_mem_1(i);
                         
                         layer1_pct_buff(i-1) <= calced_pct(0);
                         layer2_pct_buff(i-1) <= calced_pct(1);
