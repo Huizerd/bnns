@@ -80,7 +80,7 @@ component threshold_bit is
 end component;
 
 type c_array is array (0 to 48) of std_logic_vector(4 downto 0);
-type a1_array is array(0 to 3) of std_logic_vector(7 downto 0);
+type a1_array is array(0 to 6) of std_logic_vector(7 downto 0);
 signal plus_outputs : std_logic_vector(783 downto 0);
 signal min_outputs : std_logic_vector(783 downto 0);
 signal xor_outputs : std_logic_vector(783 downto 0);
@@ -112,7 +112,7 @@ GENADDER1: for I in 0 to 5 generate
     end generate;
 
 -- en nog 1 rest?
-ADD_REST: adder_32_to_7 port map(counter_outputs(48),"00000","00000","00000","00000","00000","00000","00000",adder1_outputs(I));
+ADD_REST: adder_32_to_7 port map(counter_outputs(48),"00000","00000","00000","00000","00000","00000","00000",adder1_outputs(6));
     
 -- last adder results in popcount which has no correction for bias or any other effects just the amount of bits. 
 FINAL_ADDER: seveneightadder port map(adder1_outputs(0),adder1_outputs(1),adder1_outputs(2),adder1_outputs(3), "00000000", "00000000", "00000000", popcount );   
