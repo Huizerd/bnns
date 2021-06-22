@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use std.textio.all;
 use ieee.std_logic_textio.all;
-use work.type_package.all;
+use work.types_package.all;
 
 entity dataflow is
 generic (
