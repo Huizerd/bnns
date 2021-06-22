@@ -37,8 +37,9 @@ def export(config, checkpoint):
                     f.write("".join((str(w) for w in line)) + "\n")
 
             # write bias
-            with open(f"{save_dir}/l{i}_biases.txt", "w") as f:
-                f.write("".join((str(b) for b in biases)) + "\n")
+            with open(f"{save_dir}/l{i}_biases_test.txt", "w") as f:
+                # bias list is reversed to accomodate vhdl code
+                f.write("".join((str(b) for b in biases[::-1])) + "\n") 
 
         # output
         # convert from -1, 1 to 0, 1
@@ -51,8 +52,9 @@ def export(config, checkpoint):
                 f.write("".join((str(w) for w in line)) + "\n")
 
         # write bias
-        with open(f"{save_dir}/l{len(model.hiddens)}_biases.txt", "w") as f:
-            f.write("".join((str(b) for b in biases)) + "\n")
+        with open(f"{save_dir}/l{len(model.hiddens)}_biases_test.txt", "w") as f:
+            # bias list is reversed to accomodate vhdl code
+            f.write("".join((str(b) for b in biases[::-1])) + "\n")
 
     # save input image and network output
     image = data[0][0]
