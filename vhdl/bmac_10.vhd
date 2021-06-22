@@ -12,7 +12,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity bmac_10 is
   Port (weights, previous : in std_logic_vector(511 downto 0);
-        threshold : in std_logic_vector(10 downto 0);
         bias : in std_logic;
         node_value : out std_logic_vector(9 downto 0));
 end bmac_10;

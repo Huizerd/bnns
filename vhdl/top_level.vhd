@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity top_level is
 port(
@@ -32,7 +33,9 @@ port(
     bias_1          : out std_logic;
     bias_2          : out std_logic;
     enable          : out std_logic_vector(2 downto 0);
-    calced_pct      : in std_logic_vector(2 downto 0);
+    calced_pct_0    : in std_logic;
+    calced_pct_1    : in std_logic;
+    calced_pct_2    : in std_logic_vector(9 downto 0);
     out_layer       : out std_logic_vector(output_layer_size - 1 downto 0)
     );
 end component;
@@ -58,11 +61,14 @@ end component;
 component bmac_10
 port(
     weights, previous : in std_logic_vector(511 downto 0);
-    threshold : in std_logic_vector(10 downto 0);
     bias : in std_logic;
     node_value : out std_logic_vector(9 downto 0) 
     );
 end component;  
+
+signal threshold_bmac_784 : std_logic_vector(10 downto 0);
+signal threshold_bmac_512 : std_logic_vector(10 downto 0);
+signal threshold_bmac_10 : std_logic_vector(10 downto 0);
 
 signal prev_pct_0 : std_logic_vector(783 downto 0);
 signal prev_pct_1 : std_logic_vector(511 downto 0);
@@ -74,9 +80,14 @@ signal bias_0     : std_logic;
 signal bias_1     : std_logic;
 signal bias_2     : std_logic;
 signal enable     : std_logic_vector(2 downto 0);
-signal calced_pct : std_logic_vector(2 downto 0);
+signal calced_pct_0 : std_logic;
+signal calced_pct_1 : std_logic;
+signal calced_pct_2 : std_logic_vector(9 downto 0);
     
 begin
+
+threshold_bmac_784 <= std_logic_vector(to_unsigned(391, threshold_bmac_784'length));
+threshold_bmac_512 <= std_logic_vector(to_unsigned(254, threshold_bmac_512'length));
 
 l_dataflow: dataflow 
 generic map (
@@ -99,7 +110,9 @@ port map(
     bias_1,
     bias_2,
     enable,
-    calced_pct,
+    calced_pct_0,
+    calced_pct_1,
+    calced_pct_2,
     out_layer
     );
     
@@ -107,28 +120,26 @@ l_bmac_0: bmac_784
 port map(
     weight_0,
     prev_pct_0,
-    --threshold
+    threshold_bmac_784,
     bias_0,
-    calced_pct(0)
+    calced_pct_0
     ); 
     
 l_bmac_1: bmac_512
 port map(
     weight_1,
     prev_pct_1,
-    --threshold
+    threshold_bmac_512,
     bias_1,
-    calced_pct(1)
+    calced_pct_1
     ); 
     
 l_bmac_2: bmac_10
-generic map(
 port map(
     weight_2,
     prev_pct_2,
-    --threshold
     bias_2,
-    calced_pct(2)
+    calced_pct_2
     ); 
     
 end behavioral;
