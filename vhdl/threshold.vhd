@@ -51,12 +51,12 @@ GEN_AND: for I in 2 to 10 generate
     and_outputs_smaller(I) <= threshold(I) and (not(popcount(I)));
 end generate;
 
-or_outputs_larger(9) <= and_outputs_larger(10) or and_outputs_larger(9);
-or_outputs_smaller(9) <= and_outputs_smaller(10) or and_outputs_smaller(9);
+or_outputs_larger(9) <= and_outputs_larger(10) or (and_outputs_larger(9) and not and_outputs_smaller(10));
+or_outputs_smaller(9) <= and_outputs_smaller(10) or (and_outputs_smaller(9) and not and_outputs_larger(10));
 
 GEN_OR: for I in 2 to 8 generate
-    or_outputs_larger(I) <= and_outputs_larger(I) or or_outputs_larger(I+1);
-    or_outputs_smaller(I) <= and_outputs_smaller(I) or or_outputs_smaller(I+1);
+    or_outputs_larger(I) <= (and_outputs_larger(I) and not or_outputs_smaller(I+1)) or or_outputs_larger(I+1);
+    or_outputs_smaller(I) <=(and_outputs_smaller(I) and not or_outputs_larger(I+1))or or_outputs_smaller(I+1);
 end generate;
  
 --Check larger than upto last 2 bits
