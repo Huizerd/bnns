@@ -21,7 +21,7 @@ port(
 end component;
 
 impure function input_image return std_logic_vector is
-        file text_file : text open read_mode is "../export/base_version_7/in_image.txt";
+        file text_file : text open read_mode is "in_image.txt";
         variable text_line : line;
         variable input : std_logic_vector(783 downto 0);
         variable good : boolean;
@@ -47,14 +47,13 @@ port map (
 
 );
 
-
 clk <= 	'1' after 25 ns when clk /='1' else
         	'0' after 25 ns;
 
 rst <= 	'1' after 0 ns,
-	'0' after 50 ns;
+	'0' after 200 ns;
 
 in_layer <= in_image;
-out_layer <= out_layer;
+--out_layer <= out_layer;
 
 end behavioral;

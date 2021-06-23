@@ -44,7 +44,6 @@ end component;
 component bmac_784
 port(
     weights, previous : in std_logic_vector(783 downto 0);
-    threshold : in std_logic_vector(10 downto 0);
     bias : in std_logic;
     node_value : out std_logic 
     );
@@ -67,7 +66,6 @@ port(
     );
 end component;  
 
-signal threshold_bmac_784 : std_logic_vector(10 downto 0);
 signal threshold_bmac_512 : std_logic_vector(10 downto 0);
 signal threshold_bmac_10 : std_logic_vector(10 downto 0);
 
@@ -87,7 +85,6 @@ signal calced_pct_2 : std_logic_vector(9 downto 0);
     
 begin
 
-threshold_bmac_784 <= std_logic_vector(to_unsigned(391, threshold_bmac_784'length));
 threshold_bmac_512 <= std_logic_vector(to_unsigned(254, threshold_bmac_512'length));
 
 l_dataflow: dataflow 
@@ -121,7 +118,6 @@ l_bmac_0: bmac_784
 port map(
     weight_0,
     prev_pct_0,
-    threshold_bmac_784,
     bias_0,
     calced_pct_0
     ); 

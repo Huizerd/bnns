@@ -99,9 +99,9 @@ GENCOUNTER: for I in 0 to 31 generate
     
 -- 32 counter outputs van 5 bits worden verdeeld over 4 8(5bit) naar 8 bit adders
 GENADDER1: for I in 0 to 3 generate
-    ADDER8_5: adder_32_to_7 port map(counter_outputs(I),counter_outputs(I+1),counter_outputs(I+2),
-                                    counter_outputs(I+3),counter_outputs(I+4),counter_outputs(I+5),
-                                    counter_outputs(I+6),counter_outputs(I+7), adder1_outputs(I));
+    ADDER8_5: adder_32_to_7 port map(counter_outputs(I*8),counter_outputs(I*8+1),counter_outputs(I*8+2),
+                                    counter_outputs(I*8+3),counter_outputs(I*8+4),counter_outputs(I*8+5),
+                                    counter_outputs(I*8+6),counter_outputs(I*8+7), adder1_outputs(I));
     end generate;
     
 -- last adder results in popcount which has no correction for bias or any other effects just the amount of bits. 

@@ -39,7 +39,7 @@ architecture dataflow_architecture of dataflow is
     type weights_memory_2 is array (0 to output_layer_size - 1) of std_logic_vector(hidden_layer_size - 1 downto 0);
     
     impure function init_weights_mem_0 return weights_memory_0 is
-        file text_file : text open read_mode is "../export/base_version_7/l0_weights.txt";
+        file text_file : text open read_mode is "l0_weights.txt";
         variable text_line : line;
         variable weights : weights_memory_0;
         variable good : boolean;
@@ -53,7 +53,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_weights_mem_1 return weights_memory_1 is
-        file text_file : text open read_mode is "../export/base_version_7/l1_weights.txt";
+        file text_file : text open read_mode is "l1_weights.txt";
         variable text_line : line;
         variable weights : weights_memory_1;
         variable good : boolean;
@@ -67,7 +67,7 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_weights_mem_2 return weights_memory_2 is
-        file text_file : text open read_mode is "../export/base_version_7/l2_weights.txt";
+        file text_file : text open read_mode is "l2_weights.txt";
         variable text_line : line;
         variable weights : weights_memory_2;
         variable good : boolean;
@@ -81,35 +81,41 @@ architecture dataflow_architecture of dataflow is
     end function;
     
     impure function init_bias_mem_0 return std_logic_vector is
-        file text_file : text open read_mode is "../export/base_version_7/l0_biases.txt";
+        file text_file : text open read_mode is "l0_biases.txt";
         variable text_line : line;
         variable biases : std_logic_vector(hidden_layer_size - 1 downto 0);
         variable good : boolean;
     begin
-        readline(text_file, text_line);
-        read(text_line, biases, good);
+        for i in 0 to hidden_layer_size - 1 loop
+                readline(text_file, text_line);
+                read(text_line, biases(i), good);
+        end loop;
         return biases;
     end function;
     
     impure function init_bias_mem_1 return std_logic_vector is
-        file text_file : text open read_mode is "../export/base_version_7/l1_biases.txt";
+        file text_file : text open read_mode is "l1_biases.txt";
         variable text_line : line;
         variable biases : std_logic_vector(hidden_layer_size - 1 downto 0);
         variable good : boolean;
     begin
-        readline(text_file, text_line);
-        read(text_line, biases, good);
+        for i in 0 to hidden_layer_size - 1 loop
+                readline(text_file, text_line);
+                read(text_line, biases(i), good);
+        end loop;
         return biases;
     end function;
     
     impure function init_bias_mem_2 return std_logic_vector is
-        file text_file : text open read_mode is "../export/base_version_7/l2_biases.txt";
+        file text_file : text open read_mode is "l2_biases.txt";
         variable text_line : line;
         variable biases : std_logic_vector(output_layer_size - 1 downto 0);
         variable good : boolean;
     begin
-        readline(text_file, text_line);
-        read(text_line, biases, good);
+        for i in 0 to output_layer_size - 1 loop
+                readline(text_file, text_line);
+                read(text_line, biases(i), good);
+        end loop;
         return biases;
     end function;
     
@@ -191,9 +197,9 @@ begin
                         bias_1 <= bias_mem_1(i);
                         bias_2 <= bias_mem_2(i);
 
-                        layer1_pct_buff(i-1) <= calced_pct_0;
-                        layer2_pct_buff(i-1) <= calced_pct_1;
-                        layer3_pct_buff(i-1) <= calced_pct_2;
+                        layer1_pct_buff(hidden_layer_size - i) <= calced_pct_0;
+                        layer2_pct_buff(hidden_layer_size - i) <= calced_pct_1;
+                        layer3_pct_buff(i - 1) <= calced_pct_2;
                         i := i + 1;
                         
                     elsif (i = output_layer_size) then
@@ -205,9 +211,9 @@ begin
                         bias_0 <= bias_mem_0(i);
                         bias_1 <= bias_mem_1(i);
                         
-                        layer1_pct_buff(i-1) <= calced_pct_0;
-                        layer2_pct_buff(i-1) <= calced_pct_1;
-                        layer3_pct_buff(i-1) <= calced_pct_2;
+                        layer1_pct_buff(hidden_layer_size - i) <= calced_pct_0;
+                        layer2_pct_buff(hidden_layer_size - i) <= calced_pct_1;
+                        layer3_pct_buff(i - 1) <= calced_pct_2;
                         i := i + 1;
         
                     elsif (i < hidden_layer_size) then
@@ -219,8 +225,8 @@ begin
                         bias_0 <= bias_mem_0(i);
                         bias_1 <= bias_mem_1(i);
                         
-                        layer1_pct_buff(i-1) <= calced_pct_0;
-                        layer2_pct_buff(i-1) <= calced_pct_1;
+                        layer1_pct_buff(hidden_layer_size - i) <= calced_pct_0;
+                        layer2_pct_buff(hidden_layer_size - i) <= calced_pct_1;
                         --layer3_pct_buff(i) <= calced_pct(2);
                         i := i + 1;
 
@@ -231,8 +237,8 @@ begin
                         --weight_0 <= weights_mem_0(i);
                         --weight_1 <= weights_mem_1(i);
                         
-                        layer1_pct_buff(i-1) <= calced_pct_0;
-                        layer2_pct_buff(i-1) <= calced_pct_1;
+                        layer1_pct_buff(hidden_layer_size - i) <= calced_pct_0;
+                        layer2_pct_buff(hidden_layer_size - i) <= calced_pct_1;
                         --layer3_pct_buff(i) <= calced_pct(2);
                         i := i + 1;
         

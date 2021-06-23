@@ -33,7 +33,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity bmac_784 is
   Port (weights, previous : in std_logic_vector(783 downto 0);
-        threshold : in std_logic_vector(10 downto 0);
         bias : in std_logic;
         node_value : out std_logic);
 end bmac_784;
@@ -83,10 +82,12 @@ type c_array is array (0 to 48) of std_logic_vector(4 downto 0);
 type a1_array is array(0 to 6) of std_logic_vector(7 downto 0);
 signal plus_outputs : std_logic_vector(783 downto 0);
 signal min_outputs : std_logic_vector(783 downto 0);
-signal xor_outputs : std_logic_vector(783 downto 0);
-signal diff_outputs : std_logic_vector(783 downto 0);
+--signal xor_outputs : std_logic_vector(783 downto 0);
+signal threshold : std_logic_vector(10 downto 0);
 signal counter_outputs : c_array;
+signal counter_outputs_min : c_array;
 signal adder1_outputs : a1_array;
+signal adder1_outputs_min : a1_array;
 signal popcount : std_logic_vector(10 downto 0);
 begin
 
@@ -96,26 +97,47 @@ begin
 GENXNOR: for I in 0 to 783 generate
     plus_outputs(I) <= weights(I) and previous(I);
     min_outputs(I) <= not weights(I) and previous(I);
-    xor_outputs(I) <= plus_outputs(I) and not min_outputs(I);
+--    xor_outputs(I) <= plus_outputs(I) and not min_outputs(I);
     end generate;
     
 --  49 16 5 counters
 GENCOUNTER: for I in 0 to 48 generate
-    COUNTER_I: counter port map(xor_outputs((I+1)*16-1 downto I*16), counter_outputs(I));
+    COUNTER_I: counter port map(plus_outputs((I+1)*16-1 downto I*16), counter_outputs(I));
     end generate;
     
 -- 49 counter outputs van 5 bits worden verdeeld over 6 8(5bit) naar 8 bit adders
 GENADDER1: for I in 0 to 5 generate
-    ADDER8_5: adder_32_to_7 port map(counter_outputs(I),counter_outputs(I+1),counter_outputs(I+2),
-                                    counter_outputs(I+3),counter_outputs(I+4),counter_outputs(I+5),
-                                    counter_outputs(I+6),counter_outputs(I+7), adder1_outputs(I));
+    ADDER8_5: adder_32_to_7 port map(counter_outputs(I*8),counter_outputs(I*8+1),counter_outputs(I*8+2),
+                                    counter_outputs(I*8+3),counter_outputs(I*8+4),counter_outputs(I*8+5),
+                                    counter_outputs(I*8+6),counter_outputs(I*8+7), adder1_outputs(I));
     end generate;
 
 -- en nog 1 rest?
 ADD_REST: adder_32_to_7 port map(counter_outputs(48),"00000","00000","00000","00000","00000","00000","00000",adder1_outputs(6));
     
 -- last adder results in popcount which has no correction for bias or any other effects just the amount of bits. 
-FINAL_ADDER: seveneightadder port map(adder1_outputs(0),adder1_outputs(1),adder1_outputs(2),adder1_outputs(3), "00000000", "00000000", "00000000", popcount );   
+FINAL_ADDER: seveneightadder port map(adder1_outputs(0),adder1_outputs(1),adder1_outputs(2),adder1_outputs(3), adder1_outputs(4), adder1_outputs(5), adder1_outputs(6), popcount );   
+
+
+
+--  49 16 5 counters
+GENCOUNTER_MIN: for I in 0 to 48 generate
+    COUNTER_I: counter port map(min_outputs((I+1)*16-1 downto I*16), counter_outputs_min(I));
+    end generate;
+    
+-- 49 counter outputs van 5 bits worden verdeeld over 6 8(5bit) naar 8 bit adders
+GENADDER1_MIN: for I in 0 to 5 generate
+    ADDER8_5: adder_32_to_7 port map(counter_outputs_min(I*8),counter_outputs_min(I*8+1),counter_outputs_min(I*8+2),
+                                    counter_outputs_min(I*8+3),counter_outputs_min(I*8+4),counter_outputs_min(I*8+5),
+                                    counter_outputs_min(I*8+6),counter_outputs_min(I*8+7), adder1_outputs_min(I));
+    end generate;
+
+-- en nog 1 rest?
+ADD_REST_MIN: adder_32_to_7 port map(counter_outputs_min(48),"00000","00000","00000","00000","00000","00000","00000",adder1_outputs_min(6));
+    
+-- last adder results in popcount which has no correction for bias or any other effects just the amount of bits. 
+FINAL_ADDER_MIN: seveneightadder port map(adder1_outputs_min(0),adder1_outputs_min(1),adder1_outputs_min(2),adder1_outputs_min(3), adder1_outputs_min(4), adder1_outputs_min(5), adder1_outputs_min(6), threshold );   
+
 
 --final output to binary output.
 FINAL_RESULT: threshold_bit port map(popcount, threshold, bias, node_value);
