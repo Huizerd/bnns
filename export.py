@@ -39,7 +39,8 @@ def export(config, checkpoint):
             # write bias
             with open(f"{save_dir}/l{i}_biases.txt", "w") as f:
                 # bias list is reversed to accomodate vhdl code
-                f.write("".join((str(b) for b in biases[::-1])) + "\n") 
+                for b in biases:
+                    f.write("".join(str(b)) + "\n") 
 
         # output
         # convert from -1, 1 to 0, 1
@@ -53,8 +54,8 @@ def export(config, checkpoint):
 
         # write bias
         with open(f"{save_dir}/l{len(model.hiddens)}_biases.txt", "w") as f:
-            # bias list is reversed to accomodate vhdl code
-            f.write("".join((str(b) for b in biases[::-1])) + "\n")
+            for b in biases:
+                f.write("".join(str(b)) + "\n") 
 
     # save input image and network output
     image = data[0][0]
@@ -78,4 +79,4 @@ if __name__ == "__main__":
     with open(args.config, "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    export(config, args.checkpoint)
+        export(config, args.checkpoint)
