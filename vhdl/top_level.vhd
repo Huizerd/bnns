@@ -5,7 +5,7 @@ use work.types_package.all;
 
 entity top_level is
 port(
-    clk         : in std_logic;
+    CLK         : in std_logic;
     rst         : in std_logic;
     in_layer    : in std_logic_vector(783 downto 0);
     out_layer   : out out_type
@@ -21,7 +21,7 @@ generic (
 		output_layer_size : integer := 10
 		);
 port(
-    clk             : in std_logic;
+    CLK             : in std_logic;
     rst             : in std_logic;
     in_layer        : in std_logic_vector(input_size - 1 downto 0);
     prev_pct_0      : out std_logic_vector(input_size - 1 downto 0);
@@ -85,7 +85,7 @@ signal calced_pct_2 : std_logic_vector(9 downto 0);
     
 begin
 
-threshold_bmac_512 <= std_logic_vector(to_unsigned(254, threshold_bmac_512'length));
+threshold_bmac_512 <= std_logic_vector(to_unsigned(255, threshold_bmac_512'length));
 
 l_dataflow: dataflow 
 generic map (

@@ -12,7 +12,7 @@ generic (
 		output_layer_size : integer := 10
 		);
 port(
-		clk             : in std_logic;
+		CLK             : in std_logic;
 		rst             : in std_logic;
 		in_layer        : in std_logic_vector(input_size - 1 downto 0);
 		prev_pct_0      : out std_logic_vector(input_size - 1 downto 0);
@@ -33,101 +33,7 @@ port(
 end dataflow;
 
 architecture dataflow_architecture of dataflow is
-    
-    type weights_memory_0 is array (0 to hidden_layer_size - 1) of std_logic_vector(input_size - 1 downto 0);
-    type weights_memory_1 is array (0 to hidden_layer_size - 1) of std_logic_vector(hidden_layer_size - 1 downto 0);
-    type weights_memory_2 is array (0 to output_layer_size - 1) of std_logic_vector(hidden_layer_size - 1 downto 0);
-    
-    impure function init_weights_mem_0 return weights_memory_0 is
-        file text_file : text open read_mode is "l0_weights.txt";
-        variable text_line : line;
-        variable weights : weights_memory_0;
-        variable good : boolean;
-    begin
-        for i in 0 to hidden_layer_size - 1 loop
-            readline(text_file, text_line);
-            read(text_line, weights(i), good);
-        end loop;
-        
-        return weights;
-    end function;
-    
-    impure function init_weights_mem_1 return weights_memory_1 is
-        file text_file : text open read_mode is "l1_weights.txt";
-        variable text_line : line;
-        variable weights : weights_memory_1;
-        variable good : boolean;
-    begin
-        for i in 0 to hidden_layer_size - 1 loop
-            readline(text_file, text_line);
-            read(text_line, weights(i), good);
-        end loop;
-        
-        return weights;
-    end function;
-    
-    impure function init_weights_mem_2 return weights_memory_2 is
-        file text_file : text open read_mode is "l2_weights.txt";
-        variable text_line : line;
-        variable weights : weights_memory_2;
-        variable good : boolean;
-    begin
-        for i in 0 to output_layer_size - 1 loop
-            readline(text_file, text_line);
-            read(text_line, weights(i), good);
-        end loop;
-        
-        return weights;
-    end function;
-    
-    impure function init_bias_mem_0 return std_logic_vector is
-        file text_file : text open read_mode is "l0_biases.txt";
-        variable text_line : line;
-        variable biases : std_logic_vector(hidden_layer_size - 1 downto 0);
-        variable good : boolean;
-    begin
-        for i in 0 to hidden_layer_size - 1 loop
-                readline(text_file, text_line);
-                read(text_line, biases(i), good);
-        end loop;
-        return biases;
-    end function;
-    
-    impure function init_bias_mem_1 return std_logic_vector is
-        file text_file : text open read_mode is "l1_biases.txt";
-        variable text_line : line;
-        variable biases : std_logic_vector(hidden_layer_size - 1 downto 0);
-        variable good : boolean;
-    begin
-        for i in 0 to hidden_layer_size - 1 loop
-                readline(text_file, text_line);
-                read(text_line, biases(i), good);
-        end loop;
-        return biases;
-    end function;
-    
-    impure function init_bias_mem_2 return std_logic_vector is
-        file text_file : text open read_mode is "l2_biases.txt";
-        variable text_line : line;
-        variable biases : std_logic_vector(output_layer_size - 1 downto 0);
-        variable good : boolean;
-    begin
-        for i in 0 to output_layer_size - 1 loop
-                readline(text_file, text_line);
-                read(text_line, biases(i), good);
-        end loop;
-        return biases;
-    end function;
-    
-    
-    signal weights_mem_0 : weights_memory_0 := init_weights_mem_0;
-    signal weights_mem_1 : weights_memory_1 := init_weights_mem_1;
-    signal weights_mem_2 : weights_memory_2 := init_weights_mem_2;
-    
-    signal bias_mem_0 : std_logic_vector(hidden_layer_size - 1 downto 0) := init_bias_mem_0;
-    signal bias_mem_1 : std_logic_vector(hidden_layer_size - 1 downto 0) := init_bias_mem_1;
-    signal bias_mem_2 : std_logic_vector(output_layer_size - 1 downto 0) := init_bias_mem_2;
-    
+
     signal layer0_pct       : std_logic_vector(input_size - 1 downto 0);
     signal layer1_pct_buff  : std_logic_vector(hidden_layer_size - 1 downto 0);
     signal layer1_pct       : std_logic_vector(hidden_layer_size - 1 downto 0);
@@ -140,7 +46,7 @@ begin
 
 	process(clk)
 	
-		variable i : integer range 0 to hidden_layer_size := hidden_layer_size+1;
+		variable i : integer range 0 to hidden_layer_size+1 := hidden_layer_size+1;
 		variable cycles_BMAC : integer range 0 to cycles_per_BMAC := 0;
 
     begin
@@ -174,9 +80,9 @@ begin
                         enable(0) <= '1';
                         enable(1) <= '0';
                         enable(2) <= '1';
-                        weight_0 <= weights_mem_0(i);
-                        weight_1 <= weights_mem_1(i);
-                        weight_2 <= weights_mem_2(i);
+                        weight_0 <= I0_weights(i);
+                        weight_1 <= I1_weights(i);
+                        weight_2 <= I2_weights(i);
                         bias_0 <= bias_mem_0(i);
                         bias_1 <= bias_mem_1(i);
                         bias_2 <= bias_mem_2(i);
@@ -190,9 +96,9 @@ begin
                         enable(0) <= '1';
                         enable(1) <= '1';
                         enable(2) <= '1';
-                        weight_0 <= weights_mem_0(i);
-                        weight_1 <= weights_mem_1(i);
-                        weight_2 <= weights_mem_2(i);
+                        weight_0 <= I0_weights(i);
+                        weight_1 <= I1_weights(i);
+                        weight_2 <= I2_weights(i);
                         bias_0 <= bias_mem_0(i);
                         bias_1 <= bias_mem_1(i);
                         bias_2 <= bias_mem_2(i);
@@ -206,8 +112,8 @@ begin
                         enable(0) <= '1';
                         enable(1) <= '1';
                         enable(2) <= '0';
-                        weight_0 <= weights_mem_0(i);
-                        weight_1 <= weights_mem_1(i);
+                        weight_0 <= I0_weights(i);
+                        weight_1 <= I1_weights(i);
                         bias_0 <= bias_mem_0(i);
                         bias_1 <= bias_mem_1(i);
                         
@@ -220,8 +126,8 @@ begin
                         enable(0) <= '1';
                         enable(1) <= '1';
                         enable(2) <= '0';
-                        weight_0 <= weights_mem_0(i);
-                        weight_1 <= weights_mem_1(i);
+                        weight_0 <= I0_weights(i);
+                        weight_1 <= I1_weights(i);
                         bias_0 <= bias_mem_0(i);
                         bias_1 <= bias_mem_1(i);
                         

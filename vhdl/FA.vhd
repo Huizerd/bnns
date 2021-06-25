@@ -12,11 +12,11 @@ S : out std_logic;
 Cout : out std_logic);
 end FA;
 
-architecture structural of FA is
+architecture Behavioral of FA is
 
 begin
 
  S <= (A XOR B) XOR Cin ;
  Cout <= (A AND B) OR (Cin AND A) OR (Cin AND B) ;
 
-end structural;
+end Behavioral;
