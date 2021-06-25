@@ -29,6 +29,12 @@ component seveneightadder is
               output  : out std_logic_vector(10 downto 0));
 end component;
 
+component finalvalueconverter is
+  Port (popcount : in std_logic_vector(10 downto 0 );
+        bias : in std_logic;
+        cell_value : out std_logic_vector(10 downto 0));
+end component;
+
 component adder_32_to_7 is 
 generic ( 	n : integer := 5;	
 		n_out : integer := 8 ); 
@@ -64,7 +70,7 @@ type a1_array is array(0 to 3) of std_logic_vector(7 downto 0);
 signal xor_outputs : std_logic_vector(511 downto 0);
 signal counter_outputs : c_array;
 signal adder1_outputs : a1_array;
-signal popcount : std_logic_vector(10 downto 0);
+signal popcount,node_value_full : std_logic_vector(10 downto 0);
 begin
 
 --XOR all input weights and previous bitwise
@@ -88,6 +94,7 @@ GENADDER1: for I in 0 to 3 generate
 FINAL_ADDER: seveneightadder port map(adder1_outputs(0),adder1_outputs(1),adder1_outputs(2),adder1_outputs(3), "00000000", "00000000", "00000000", popcount);   
 
 --final output with bias -> RCA
-B_ADDER: bias_adder port map(popcount, bias, node_value);
 
+B_ADDER: finalvalueconverter port map(popcount, bias, node_value_full);
+node_value <= node_value_full(9 downto 0);
 end Behavioral;

@@ -13,7 +13,7 @@ architecture behavioral of top_level_tb is
 
 component top_level is
 port(
-    clk         : in std_logic;
+    CLK         : in std_logic;
     rst         : in std_logic;
     in_layer    : in std_logic_vector(783 downto 0);
     out_layer   : out out_type
