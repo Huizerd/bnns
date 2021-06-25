@@ -40,7 +40,7 @@ def export(config, checkpoint):
             with open(f"{save_dir}/l{i}_biases.txt", "w") as f:
                 # bias list is reversed to accomodate vhdl code
                 for b in biases:
-                    f.write("".join(str(b)) + "\n") 
+                    f.write("".join(str(b)) + "\n")
 
         # output
         # convert from -1, 1 to 0, 1
@@ -55,19 +55,23 @@ def export(config, checkpoint):
         # write bias
         with open(f"{save_dir}/l{len(model.hiddens)}_biases.txt", "w") as f:
             for b in biases:
-                f.write("".join(str(b)) + "\n") 
+                f.write("".join(str(b)) + "\n")
 
     # save input image and network output
     image = data[0][0]
-    output = model(image.view(1, *image.shape))
+    # run several times!
+    with torch.autograd.profiler.profile(use_cuda=True) as prof:
+        output = model(image.view(1, *image.shape))
+    print(prof)
     image = image.view(-1).int().tolist()  # is already 0, 1
     output = output.view(-1).int().tolist()  # raw counts
 
-    with open(f"{save_dir}/in_image.txt", "w") as f:
-        f.write("".join((str(i) for i in image)) + "\n")
-    with open(f"{save_dir}/net_output.txt", "w") as f:
-        for out in output:
-            f.write(f"{out}\n")
+    if False:
+        with open(f"{save_dir}/in_image.txt", "w") as f:
+            f.write("".join((str(i) for i in image)) + "\n")
+        with open(f"{save_dir}/net_output.txt", "w") as f:
+            for out in output:
+                f.write(f"{out}\n")
 
 
 if __name__ == "__main__":
