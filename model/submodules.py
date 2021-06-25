@@ -1,6 +1,20 @@
 import torch
 
 
+class DontBinarize(torch.autograd.Function):
+    """
+    Fake binarization function (results in full-precision network).
+    """
+
+    @staticmethod
+    def forward(ctx, x):
+        return x
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        return grad_output.clone()
+
+
 class BinarizeCancel(torch.autograd.Function):
     """
     Binarized activation: returns sign in forward pass,
@@ -46,6 +60,7 @@ class BinarizeHardTanh(torch.autograd.Function):
 
 
 # just for convenience
+dont_binarize = DontBinarize.apply
 binarize_cancel = BinarizeCancel.apply
 binarize_htanh = BinarizeHardTanh.apply
 

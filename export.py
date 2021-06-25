@@ -58,9 +58,11 @@ def export(config, checkpoint):
                 f.write("".join(str(b)) + "\n")
 
     # save input image and network output
+    # image = torch.stack([data[i][0] for i in range(100)])  # batch of 100
     image = data[0][0]
     # run several times!
     with torch.autograd.profiler.profile(use_cuda=True) as prof:
+        # for _ in range(100):  # 100 sequential
         output = model(image.view(1, *image.shape))
     print(prof)
     image = image.view(-1).int().tolist()  # is already 0, 1

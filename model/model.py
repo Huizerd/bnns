@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 import torch
 import torchmetrics
 
-from model.submodules import BinarizedLinear, binarize_cancel, binarize_htanh
+from model.submodules import BinarizedLinear, dont_binarize, binarize_cancel, binarize_htanh
 
 
 class BNN(pl.LightningModule):
@@ -52,6 +52,7 @@ class BNN(pl.LightningModule):
         # go through hidden layers
         for hidden in self.hiddens:
             x = self.binarize(hidden(x))
+            # x = torch.relu(hidden(x))  # if you want relu in combination with full precision
         x = self.out(x)  # we don't binarize the final activation
 
         return x
