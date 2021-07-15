@@ -15,6 +15,27 @@ class DontBinarize(torch.autograd.Function):
         return grad_output.clone()
 
 
+class OnlyClamp(torch.autograd.Function):
+    """
+    Don't binarize, only clamp gradients.
+    """
+
+    @staticmethod
+    def forward(ctx, x):
+        ctx.save_for_backward(x)
+        return x.sign()
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        (x,) = ctx.saved_tensors
+        grad_input = grad_output.clone()
+        # check where forward |x| <= 1
+        clipped = x.abs().le(1)
+        # for those outside: grad is 0
+        grad_input[~clipped] = 0
+        return grad_input
+
+
 class BinarizeCancel(torch.autograd.Function):
     """
     Binarized activation: returns sign in forward pass,
@@ -61,6 +82,7 @@ class BinarizeHardTanh(torch.autograd.Function):
 
 # just for convenience
 dont_binarize = DontBinarize.apply
+only_clamp = OnlyClamp.apply
 binarize_cancel = BinarizeCancel.apply
 binarize_htanh = BinarizeHardTanh.apply
 

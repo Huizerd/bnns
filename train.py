@@ -5,7 +5,7 @@ from pytorch_lightning.loggers import TensorBoardLogger
 import yaml
 
 from data.datamodule import BinaryMNISTDataModule
-from model.model import BNN
+from model.model import BNN, HookBNN
 
 
 def train(config):
@@ -26,7 +26,8 @@ def train(config):
     )
 
     # model
-    model = BNN(**config["model"], batch_size=config["datamodule"]["batch"])
+    # model = BNN(**config["model"], batch_size=config["datamodule"]["batch"])
+    model = HookBNN(**config["model"], batch_size=config["datamodule"]["batch"])
 
     # logging with TensorBoard
     logger = TensorBoardLogger(config["logging"]["dir"], name=config["logging"]["name"])
