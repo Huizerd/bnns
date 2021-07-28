@@ -9,11 +9,16 @@ trainer:
   track_grad_norm: 2  # set to -1 to not track grad norm
 
 model:
-  binarize_fn: binarize_cancel
+  act_fn: relu  # relu/binarize_cancel/dont_binarize/only_clamp
+  quant_fn: quantize
+  quant_params:
+    quant_min: -128
+    quant_max: 127
+    symmetric: True
   hidden_sizes: [512, 512]
   optimizer: torch.optim.Adam
   lr: 0.001
 
 logging:
   dir: logs
-  name: base
+  name: quantize_int8

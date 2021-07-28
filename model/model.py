@@ -3,7 +3,8 @@ import torch
 import torch.nn as nn
 import torchmetrics
 
-import model.binarize as B
+from model.binarize import binarize
+from model.quantize import quantize
 from model.submodules import BinarizedLinear, dont_binarize, binarize_cancel, binarize_htanh
 
 
@@ -109,12 +110,12 @@ class BNN(pl.LightningModule):
         return super().training_epoch_end(*args, **kwargs)
 
 
-class HookBNN(pl.LightningModule):
+class HookANN(pl.LightningModule):
     """
-    Same as BNN, but binarization as hook.
+    ANN which can be quantized/binarized with hooks.
     """
 
-    def __init__(self, hidden_sizes, optimizer, lr, batch_size, binarize_fn):
+    def __init__(self, hidden_sizes, optimizer, lr, batch_size, act_fn, quant_fn, quant_params):
         super().__init__()
 
         # save passed hyperparams
@@ -137,14 +138,15 @@ class HookBNN(pl.LightningModule):
         self.accuracy = torchmetrics.Accuracy()
         self.optim = optimizer
 
-        # binarize parameters with hooks
-        for child in self.modules():
-            for param in ["weight", "bias"]:
-                if isinstance(child, nn.Linear):
-                    B.binarize(child, param)
+        # quantize parameters with hooks
+        if quant_fn is not None:
+            for child in self.modules():
+                for param in ["weight", "bias"]:
+                    if isinstance(child, nn.Linear):
+                        eval(quant_fn)(child, param, **quant_params)
 
-        # binarize activations
-        self.binarize = eval(binarize_fn)
+        # activations: binarize or torch fn
+        self.act = getattr(torch, act_fn) if hasattr(torch, act_fn) else eval(act_fn)
 
         # these can be set by auto_scale_batch and auto_lr_find
         self.lr = lr
@@ -160,9 +162,8 @@ class HookBNN(pl.LightningModule):
 
         # go through hidden layers
         for hidden in self.hiddens:
-            x = self.binarize(hidden(x))
-            # x = torch.relu(hidden(x))  # if you want relu in combination with full precision
-        x = self.out(x)  # we don't binarize the final activation
+            x = self.act(hidden(x))
+        x = self.out(x)  # no final activation
 
         return x
 
